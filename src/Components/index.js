@@ -1,0 +1,8 @@
+/**
+ * @author:lpf
+ * @flow
+ *
+ **/
+import Text from './Text';
+
+export { Text };

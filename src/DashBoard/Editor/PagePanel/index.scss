@@ -1,0 +1,15 @@
+.page-panel {
+  width: 1920px;
+  height: 1080px;
+  background-image: url(//datav.oss-cn-hangzhou.aliyuncs.com/uploads/images/48394be6272c28ce2587fc9085807d86.png);
+  background-color: rgba(13, 42, 67, 0);
+  //transform: scale(0.525) translate(0px, 0px);
+  position: absolute;
+  transform-origin: 0 0;
+  top: 60px;
+  left: 60px;
+  transition: .2s all ease-in-out;
+  background-size: cover,contain;
+  background-position: center,right bottom;
+  background-repeat: no-repeat,no-repeat;
+}

@@ -1,0 +1,36 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  >.datav-header {
+    display: flex;
+    height: 40px;
+  }
+  >.datav-editor-containers {
+    display: flex;
+    flex: 1;
+    >.datav-components {
+      width: 185px;
+      display: flex;
+    }
+    >.datav-editor {
+      flex: 1;
+      position: relative;
+    }
+    >.datav-config-manager {
+      width: 300px;
+    }
+  }
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+body, html {
+  height: 100%;
+  width: 100%;
+}
