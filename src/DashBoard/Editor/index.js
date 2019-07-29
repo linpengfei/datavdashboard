@@ -88,9 +88,9 @@ export default DropTarget(['create', 'operate'], {
         if(!component) {
             return;
         }
-        const { left, top } = findDOMNode(component).getBoundingClientRect();
+        const { left, top } = findDOMNode(component)?.getBoundingClientRect();
         const { x, y } = monitor.getSourceClientOffset();
-        console.log(findDOMNode(component).getClientRects());
+        console.log(findDOMNode(component)?.getClientRects());
         component.insertComponent(monitor.getItem().id, { left: x - left -60, top: y - top -60});
     },
 }, collect)(Editor);
