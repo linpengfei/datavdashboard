@@ -5,6 +5,8 @@
  **/
 import React, {Component} from 'react';
 import './index.scss';
+import { Tabs } from 'antd';
+const { TabPane } = Tabs;
 // import {bindActionCreators, compose} from 'redux';
 // import {connect} from 'react-redux';
 

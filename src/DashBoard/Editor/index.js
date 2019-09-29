@@ -6,7 +6,7 @@
 import React, {Component} from 'react';
 import { findDOMNode } from 'react-dom';
 import './index.scss';
-import Rules from './Rules';
+import Rule from './Ruler';
 import { DropTarget } from 'react-dnd'
 import PagePanel from './PagePanel';
 // import { bindActionCreators, compose } from 'redux';
@@ -49,8 +49,8 @@ class Editor extends Component<Props, State> {
         const { scale, componentData } = this.state;
         console.log(this.state);
         return connectDropTarget(<div className="editor-containers">
-            <Rules axis='x' scale={scale} />
-            <Rules axis='y' scale={scale} />
+            <Rule axis='x' scale={scale} />
+            <Rule axis='y' scale={scale} />
             <PagePanel scale={scale} >
                 {componentData.map(item => {
                     const { id, component: Warp, componentData } = item;
@@ -68,29 +68,23 @@ function collect(connect, monitor, props) {
     // console.log('monitor', monitor);
     return {
         connectDropTarget: connect.dropTarget(),
-        canDrop: monitor.canDrop(),
-        isOver: monitor.isOver(),
-        getItemType: monitor.getItemType(),
-        getItem: monitor.getItem(),
-        getDropResult: monitor.getDropResult(),
-        didDrop: monitor.didDrop(),
-        getClientOffset: monitor.getClientOffset(),
+        // canDrop: monitor.canDrop(),
+        // isOver: monitor.isOver(),
+        // getItemType: monitor.getItemType(),
+        // getItem: monitor.getItem(),
+        // getDropResult: monitor.getDropResult(),
+        // didDrop: monitor.didDrop(),
+        // getClientOffset: monitor.getClientOffset(),
     };
 }
 export default DropTarget(['create', 'operate'], {
     drop: (props, monitor, component) => {
-        console.log('drop');
-
-        console.log(monitor);
-        console.log(monitor.getSourceClientOffset());
-        console.log(monitor.getClientOffset());
-        console.log(monitor.getItem());
         if(!component) {
             return;
         }
         const { left, top } = findDOMNode(component)?.getBoundingClientRect();
         const { x, y } = monitor.getSourceClientOffset();
-        console.log(findDOMNode(component)?.getClientRects());
-        component.insertComponent(monitor.getItem().id, { left: x - left -60, top: y - top -60});
+        const { scale } = component.state;
+        component.insertComponent(monitor.getItem().id, { left: (x - left -60) /scale, top: (y - top -60) /scale});
     },
 }, collect)(Editor);

@@ -1,7 +1,11 @@
-.rule-containers {
+.ruler-containers {
   height: 30px;
   width: 100%;
   left: 30px;
   position: relative;
   background: black;
+  >.ruler {
+    width: 100%;
+    height: 100%;
+  }
 }
