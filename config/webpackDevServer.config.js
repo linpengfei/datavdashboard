@@ -1,5 +1,5 @@
 'use strict';
-
+let Mock = require('mockjs');
 const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware');
 const evalSourceMapMiddleware = require('react-dev-utils/evalSourceMapMiddleware');
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
@@ -99,6 +99,20 @@ module.exports = function(proxy, allowedHost) {
       // it used the same host and port.
       // https://github.com/facebook/create-react-app/issues/2272#issuecomment-302832432
       app.use(noopServiceWorkerMiddleware());
-    },
-  };
-};
+      app.use('/mock/line', function(req, rep) {
+        rep.json(Mock.mock({code: 0, data: {
+          title: '@ctitle',
+            xAxis: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+            'data|5-10': [{
+            name: '@cname',
+              type: 'line',
+              stack: '总量',
+              'data': function() {
+                const ret = Mock.mock({'data|7-7': [{ "value|1-1000": 50 }]}).data;
+                return ret.map(item => item.value);
+              }
+            }]
+          }}))});
+      }
+    }
+  }

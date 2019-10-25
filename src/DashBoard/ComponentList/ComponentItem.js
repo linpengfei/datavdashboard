@@ -20,7 +20,7 @@ function ComponentItem(props: Props) {
 }
 // export default ComponentItem;
 const spec = {
-    beginDrag: function(props, moitor, component) {
+    beginDrag: function(props, monitor, component) {
         console.log(component);
         return { id: props.info.id };
     },

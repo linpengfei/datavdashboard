@@ -19,6 +19,12 @@ ComponentsFactory.prototype.getComponent = function (componentId) {
                 this.componentList.set(componentId, app);
                 return app;
             });
+       case 'regular':
+       case 'line':  
+         return import('../../Components/Line').then(app => {
+           this.componentList.set(componentId, app);
+           return app;
+         });
         case 'map':
         default:
             return new Promise(function (resolve, reject) {

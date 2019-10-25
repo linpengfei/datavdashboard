@@ -23,7 +23,15 @@ class ComponentList extends React.Component<Props, State> {
             resource: '',
             name: '标题',
             icon: 'http://img.alicdn.com/tfs/TB1RSuyJuuSBuNjy1XcXXcYjFXa-270-160.png',
-        }],
+        },{
+          id: 'line',
+          type: 'regular',
+          resource: '',
+          name: '折线图',
+          icon: 'http://img.alicdn.com/tfs/TB1RSuyJuuSBuNjy1XcXXcYjFXa-270-160.png',
+        }
+        ],
+      
     };
     static types = ['text', 'map', 'regular', 'media'];
     constructor(props: Props) {

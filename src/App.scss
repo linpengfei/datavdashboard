@@ -1,3 +1,4 @@
+@import '~antd/dist/antd.css';
 .App {
   display: flex;
   flex-direction: column;
@@ -21,6 +22,30 @@
     }
     >.datav-config-manager {
       width: 300px;
+      height: 100%;
+      >.config-manager-containers {
+        height: 100%;
+        .ant-tabs {
+          height: 100%;
+          >.ant-tabs-content {
+            height: calc(100% - 60px);
+            >.ant-tabs-tabpane {
+              >.data-config-containers {
+                height: 100%;
+                position: absolute;
+                >.data-attr-container {
+                  height: 50%;
+                  overflow: auto;
+                }
+                >.data-source-container {
+                  height: 50%;
+                  overflow: auto;
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

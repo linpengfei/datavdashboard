@@ -21,6 +21,7 @@
     "css-loader": "2.1.1",
     "dotenv": "6.2.0",
     "dotenv-expand": "4.2.0",
+    "echarts": "^4.4.0",
     "eslint": "^5.16.0",
     "eslint-config-react-app": "^4.0.1",
     "eslint-loader": "2.1.2",
@@ -38,7 +39,9 @@
     "jest-environment-jsdom-fourteen": "0.1.0",
     "jest-resolve": "24.7.1",
     "jest-watch-typeahead": "0.3.0",
+    "lodash": "^4.17.15",
     "mini-css-extract-plugin": "0.5.0",
+    "mockjs": "^1.0.1-beta3",
     "node-sass": "^4.12.0",
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "pnp-webpack-plugin": "1.2.1",
@@ -49,10 +52,12 @@
     "postcss-safe-parser": "4.0.1",
     "react": "^16.8.6",
     "react-app-polyfill": "^1.0.1",
+    "react-color": "^2.17.3",
     "react-dev-utils": "^9.0.1",
     "react-dnd": "^9.3.2",
     "react-dnd-html5-backend": "^9.3.2",
     "react-dom": "^16.8.6",
+    "react-json-view": "^1.19.1",
     "react-redux": "^7.1.0",
     "redux": "^4.0.4",
     "redux-actions": "^2.6.5",
@@ -62,6 +67,7 @@
     "resolve": "1.10.0",
     "rxjs": "^6.5.2",
     "sass-loader": "7.1.0",
+    "schema-utils": "^2.5.0",
     "semver": "6.0.0",
     "style-loader": "0.23.1",
     "terser-webpack-plugin": "1.2.3",
@@ -147,6 +153,8 @@
     "presets": [
       "react-app"
     ],
-    "plugins": ["@babel/plugin-proposal-optional-chaining"]
+    "plugins": [
+      "@babel/plugin-proposal-optional-chaining"
+    ]
   }
 }
