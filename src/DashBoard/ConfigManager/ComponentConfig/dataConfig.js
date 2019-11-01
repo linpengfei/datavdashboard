@@ -9,6 +9,8 @@ import {bindActionCreators} from "redux";
 import {setSelectItem, updateComponentDataSourceAction } from "../../../globalReducer";
 import {connect} from "react-redux";
 import { Row, Col, Input, Switch, InputNumber, Select, Button } from 'antd';
+import AceEditor from 'react-ace';
+import "ace-builds/src-noconflict/mode-javascript";
 const { TextArea } = Input;
 const { Option } = Select;
 // import {bindActionCreators, compose} from 'redux';
@@ -89,7 +91,26 @@ class dataConfig extends PureComponent<Props, State> {
       <Row>
         <Col span={24}>
           <div style={{ minHeight: 150 }}>
-            <TextArea value={post} onChange={e => this.setState({ dataSource:{ ...dataSource, post: e.target.value }})}/>
+            <AceEditor
+              placeholder="Placeholder Text"
+              mode="javascript"
+              theme="xcode"
+              name="blah2"
+              // onLoad={this.onLoad}
+              onChange={post => this.setState({ dataSource:{ ...dataSource, post }})}
+              fontSize={14}
+              showPrintMargin={true}
+              showGutter={true}
+              highlightActiveLine={true}
+              value={post}
+              setOptions={{
+                enableBasicAutocompletion: true,
+                enableLiveAutocompletion: true,
+                enableSnippets: true,
+                showLineNumbers: true,
+                tabSize: 2,
+              }}/>
+            {/*<TextArea value={post} onChange={e => this.setState({ dataSource:{ ...dataSource, post: e.target.value }})}/>*/}
           </div>
         </Col>
       </Row>
@@ -136,7 +157,26 @@ class dataConfig extends PureComponent<Props, State> {
       <Row>
         <Col span={4}>函数：</Col>
         <Col span={20}>
-          <TextArea value={dataFunction} onChange={e => this.setState({ dataSource:{ ...dataSource, dataFunction: e.target.value }})}/>
+          <AceEditor
+            placeholder="Placeholder Text"
+            mode="javascript"
+            theme="xcode"
+            name="blah2"
+            // onLoad={this.onLoad}
+            onChange={dataFunction => this.setState({ dataSource:{ ...dataSource, dataFunction }})}
+            fontSize={14}
+            showPrintMargin={true}
+            showGutter={true}
+            highlightActiveLine={true}
+            value={dataFunction}
+            setOptions={{
+              enableBasicAutocompletion: true,
+              enableLiveAutocompletion: true,
+              enableSnippets: true,
+              showLineNumbers: true,
+              tabSize: 2,
+            }}/>
+          {/*<TextArea value={dataFunction} onChange={e => this.setState({ dataSource:{ ...dataSource, dataFunction: e.target.value }})}/>*/}
         </Col>
       </Row>
     </>;

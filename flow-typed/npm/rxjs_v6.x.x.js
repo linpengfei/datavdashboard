@@ -1,5 +1,5 @@
-// flow-typed signature: 1bd541e9de8f0d3a8e62abe940f706e6
-// flow-typed version: fada63b8a6/rxjs_v6.x.x/flow_>=v0.72.x
+// flow-typed signature: 78dd412e1d08dfb3309b3f5709fefe94
+// flow-typed version: c6154227d1/rxjs_v6.x.x/flow_>=v0.72.x <=v0.103.x
 
 /** OPERATOR INTERFACES */
 declare interface rxjs$UnaryFunction<T, R> {

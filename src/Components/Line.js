@@ -123,13 +123,14 @@ const config = {
   dataSource: {
     type: 'API',
     name: '数据接口api',
-    path: '/mock/line',
+    path: '/mock/line/:path=wada/:id=dwwa',
     repeat: true,
     repeatTimer: 10,
     // para: Array<DataSourcesPara>,
     // pre: (attr: Object, config: Object) => {[key: string]: string },
-    post: "  console.log('response:', response);\n" +
-      "  return response.data.data;\n",
+    post: "function(response) { \n"+
+      "  console.log('response:', response);\n" +
+      "  return response.data.data;\n}",
     desc: '模拟数据接口',
   },
   dataAttr: {

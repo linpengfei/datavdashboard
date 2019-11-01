@@ -10,6 +10,8 @@ import './index.scss';
 import { bindActionCreators } from "redux";
 import { setSelectItem } from "../../../globalReducer";
 import axios from 'axios';
+import _get from 'lodash/get';
+const pathReg = /:\w+(\.\w+)*(=\w+)?/g;
 type Props = {
     width: number,
     height: number,
@@ -68,14 +70,34 @@ class ComponentWarp extends React.Component<Props, State> {
       clearTimeout(this.timer);
       const { dataSource } = this.props;
       const { type, repeat, repeatTimer, path, dataFunction, post } = dataSource;
-      switch(type) {
+      const { data } = this.state;
+      switch(type) { 
         case "API":
           const cb = () => {
             let postFunction;
             if(post) {
-              postFunction = new Function('response', post);
+              try {
+                postFunction = new Function('response', post.replace(/^function\([^]*\)[\s]*{[\s]*([^]*)[\s]*}$/, '$1'));
+              } catch(e) {
+                console.error(e);
+              }
             }
-            return axios.get(path).then(res => {
+            let pathPara = pathReg.exec(path);
+            const para = {};
+            while(pathPara) {
+              console.log(pathPara[0]);
+              const [temp] = pathPara;
+              const [a,b] = temp.split('=');
+              const value = _get(data, a, b);
+              para[temp] = value;
+              pathPara = pathReg.exec(path);
+            }
+            console.log(para);
+            let actualPath = path;
+            for(const key in para) {
+              actualPath = actualPath.replace(key, para[key]);
+            }
+            return axios.get(actualPath).then(res => {
               // console.log(res);
               const ret = postFunction ? postFunction(res) : res.data.data;
               this.setState({ data: ret });
@@ -87,10 +109,17 @@ class ComponentWarp extends React.Component<Props, State> {
           cb();
           break;
         case "FUNCTION":
+          let dataFunctionRet;
+          try {
+            dataFunctionRet = new Function('', post.replace(/^function\([^]*\)[\s]*{[\s]*([^]*)[\s]*}$/, '$1'));
+          } catch(e) {
+            console.error(e);
+          }
           const cb1 = () => {
             return new Promise(resolve => {
-              const ret = dataFunction();
+              const ret = dataFunctionRet();
               console.log(ret);
+              this.setState({ data: ret });
               if(repeat) {
                 this.timer = setTimeout(cb1, repeatTimer * 1000)
               }

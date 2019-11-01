@@ -21,7 +21,7 @@ ComponentsFactory.prototype.getComponent = function (componentId) {
             });
        case 'regular':
        case 'line':  
-         return import('../../Components/Line').then(app => {
+         return import(/* webpackChunkName: "line" */ '../../Components/Line').then(app => {
            this.componentList.set(componentId, app);
            return app;
          });
