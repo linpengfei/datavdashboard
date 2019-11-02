@@ -9,8 +9,11 @@ import React, { Component } from 'react';
 // import {connect} from 'react-redux';
 import { Row, Col, Input, Button, Upload, Icon } from 'antd';
 import { SliderPicker } from 'react-color';
+import { updateProjectConfigAction } from "../../../globalReducer";
+import {connect} from "react-redux";
+import {bindActionCreators} from "redux";
 type Props = {
-  config: {
+  projectConfig: {
     width: number,
     height: number,
     title: number,
@@ -33,7 +36,7 @@ function getBase64(img, callback) {
 }
 class index extends Component < Props, State > {
   static defaultProps = {
-    config: {
+    projectConfig: {
       width: 1920,
       height: 1080,
       title: 'demo',
@@ -43,7 +46,7 @@ class index extends Component < Props, State > {
   };
   constructor(props: Props) {
     super(props);
-    this.state = { ...props.config, loading: false };
+    this.state = { ...props.projectConfig, loading: false };
   }
   handleChange = info => {
     if (info.file.status === 'uploading') {
@@ -59,6 +62,10 @@ class index extends Component < Props, State > {
         }),
       );
     }
+  };
+  updateProject = () => {
+    const { width, height, title, backgroundColor, backgroundImg } = this.state;
+    this.props.updateProjectConfigAction({ width: parseFloat(width), height: parseFloat(height), title, backgroundColor, backgroundImg });
   };
   render() {
     const { width, height, title, backgroundColor, backgroundImg } = this.state;
@@ -115,8 +122,19 @@ class index extends Component < Props, State > {
           </Upload>
         </Col>
       </Row>
-      <Button>更新</Button>
+      <Button onClick={this.updateProject}>更新</Button>
     </div>);
   }
 }
-export default index;
+const mapStateToProps = state => ({
+  projectConfig: state.global.projectConfig,
+});
+const mapDispatchToProps = dispatch => ({
+  ...bindActionCreators({ updateProjectConfigAction }, dispatch),
+});
+const withConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps
+);
+
+export default withConnect(index);

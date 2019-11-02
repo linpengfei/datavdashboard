@@ -12,6 +12,12 @@ import './index.scss';
 type Props = {
     children: Array<Object>,
     scale: number,
+    projectConfig: {
+    width: number,
+    height: number,
+    backgroundColor: string,
+    backgroundImg: string,
+  }
 };
 type State = {};
 
@@ -24,8 +30,9 @@ class index extends Component<Props, State> {
     }
 
     render() {
-        const { scale } = this.props;
-        return <div className="page-panel" style={{ transform: `scale(${scale}) translate(0px, 0px)`}}>
+        const { scale, projectConfig } = this.props;
+        const { width, height, backgroundColor, backgroundImg} = projectConfig;
+        return <div className="page-panel" style={{ width, height, backgroundColor, backgroundImage: `url(${backgroundImg})`, transform: `scale(${scale}) translate(0px, 0px)`}}>
             {this.props.children}
         </div>;
     }

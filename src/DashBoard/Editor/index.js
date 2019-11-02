@@ -26,6 +26,12 @@ type Props = {
   styleItem: {
     configStyle: Object,
     baseStyle: Object,
+  },
+  projectConfig: {
+    width: number,
+    height: number,
+    backgroundColor: string,
+    backgroundImg: string,
   }
 };
 type State = {
@@ -38,15 +44,33 @@ class Editor extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            scale: 0.525,
+            scale: 1,
             componentData: [],
         };
         this.componentsFactory = new ComponentsFactory();
+        this.containerRef = React.createRef();
     }
 
     componentDidMount() {
+        //todo 根据实际长宽计算缩放比例
         console.log(this.containerRef);
+      this.resetScale();
+      window.addEventListener('resize', this.resetScale);
     }
+    componentWillUnmount() {
+      window.removeEventListener('resize', this.resetScale);
+    }
+    resetScale = () => {
+      if(this.containerRef.current) {
+        const { width: cWidth, height: cHeight } = this.containerRef.current.getBoundingClientRect();
+        const { projectConfig } = this.props;
+        const { width, height } = projectConfig;
+        const scale = Math.min((cWidth - 60) /width, (cHeight - 60) / height);
+        // if (scale < 1) {
+          this.setState({ scale });
+        // }
+      }
+    };
     componentDidUpdate(props, state) {
        console.log('update:', state, props);
        if(props.updateComponentStyle !== this.props.updateComponentStyle && this.props.updateComponentStyle) {
@@ -156,12 +180,12 @@ class Editor extends Component<Props, State> {
     };
     render() {
         // console.log(this.props);
-        const { connectDropTarget } = this.props;
+        const { connectDropTarget, projectConfig } = this.props;
         const { scale, componentData } = this.state;
-        return connectDropTarget(<div className="editor-containers">
+        return connectDropTarget(<div className="editor-containers" ref={this.containerRef}>
             <Rule axis='x' scale={scale} />
             <Rule axis='y' scale={scale} />
-            <PagePanel scale={scale} >
+            <PagePanel scale={scale} projectConfig={projectConfig}>
                 {componentData.map(item => {
                     const { id, component: Warp, componentData, initPropsData, initStyleData } = item;
                     const { width, height, left, top } = componentData.styleObj.baseStyle;
@@ -179,6 +203,7 @@ const mapStateToProps = state => ({
   updateComponentStyle: state.global.updateComponentStyle,
   dataSource: state.global.dataSource,
   updateComponentDataSource: state.global.updateComponentDataSource,
+  projectConfig: state.global.projectConfig,
 });
 const mapDispatchToProps = dispatch => ({
   ...bindActionCreators({ updateComponentStyleAction, updateComponentDataSourceAction }, dispatch),

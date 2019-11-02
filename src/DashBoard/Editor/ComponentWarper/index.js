@@ -11,6 +11,7 @@ import { bindActionCreators } from "redux";
 import { setSelectItem } from "../../../globalReducer";
 import axios from 'axios';
 import _get from 'lodash/get';
+import { ResizableBox } from 'react-resizable';
 const pathReg = /:\w+(\.\w+)*(=\w+)?/g;
 type Props = {
     width: number,
@@ -35,6 +36,7 @@ class ComponentWarp extends React.Component<Props, State> {
       dataSource: {},
     };
     timer: number;
+    wrappedInstance: Object;
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -42,11 +44,15 @@ class ComponentWarp extends React.Component<Props, State> {
           dataProxy: !!props.dataSource.type,
           data: props.children.props.data
         };
+        this.wrappedInstance = React.createRef();
         console.log(props.children.props.data);
     }
   selectItem = item => {
       console.log(this.props);
     console.log('select:', item);
+    if (this.props.configData.id === item.id) {
+      return false;
+    }
     const { id, initStyleData, componentData } = item;
     const { dataAttr = {}, dataSource = {} } = componentData;
     const { configStyle, baseStyle } = initStyleData;
@@ -65,6 +71,7 @@ class ComponentWarp extends React.Component<Props, State> {
   
   componentDidMount() {
       this.resetDataProxy();
+      console.log(this.wrappedInstance);
     }
     resetDataProxy = () => {
       clearTimeout(this.timer);
@@ -87,7 +94,7 @@ class ComponentWarp extends React.Component<Props, State> {
             while(pathPara) {
               console.log(pathPara[0]);
               const [temp] = pathPara;
-              const [a,b] = temp.split('=');
+              const [a,b] = temp.substr(1).split('=');
               const value = _get(data, a, b);
               para[temp] = value;
               pathPara = pathReg.exec(path);
@@ -136,19 +143,19 @@ class ComponentWarp extends React.Component<Props, State> {
         // console.log(this.props);
         const { dataProxy, data } = this.state;
         console.log("dataProxy:",dataProxy);
-        return connectDragSource(<div className="datav-transform-wrapper" onClick={ () => this.selectItem(itemData) } style={{ width, height, transform: `translate(${left}px, ${top}px)`}}>
-            <div className="navigator-line">
-                <div className="navigator-line-left" />
-                <div className="navigator-line-top" />
-                <div className="navigator-line-count">{left},{top}</div>
-            </div>
-            <div className="datav-scale">
+        return connectDragSource(
+            <div className="datav-transform-wrapper" onClick={ () => this.selectItem(itemData) } style={{ width, height, transform: `translate(${left}px, ${top}px)`}}>
+              {/*<div className="navigator-line">*/}
+              {/*    <div className="navigator-line-left" />*/}
+              {/*    <div className="navigator-line-top" />*/}
+              {/*    <div className="navigator-line-count">{left},{top}</div>*/}
+              {/*</div>*/}
+              {/*<ResizableBox width={width} height={height}>*/}
                 <div className="datav-warp">
-                    { dataProxy ? React.cloneElement(this.props.children, { data }) : this.props.children}
+                  {React.cloneElement(this.props.children, { data: dataProxy ? data : undefined, ref: this.wrappedInstance })}
                 </div>
-                {/*{select}*/}
-            </div>
-        </div>);
+              {/*</ResizableBox>*/}
+            </div>);
     }
 }
 const mapStateToProps = state => ({

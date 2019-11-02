@@ -100,11 +100,15 @@ class Line extends React.PureComponent<Props, State> {
     window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps(nextProps: Props, nextContext: any): void {
-    if (nextProps.data !== this.props.data || nextProps.styleData !== this.props.styleData) {
+    console.log(nextProps.styleData);
+    if (nextProps.data !== this.props.data || nextProps.styleData.configStyle !== this.props.styleData.configStyle) {
       this.generateOption(nextProps);
       if (this.echartsInstance) {
         this.echartsInstance.setOption(this.option);
       }
+    }
+    if(nextProps.styleData.baseStyle.wdith !== this.props.styleData.baseStyle.width || nextProps.styleData.baseStyle.height !== this.props.styleData.baseStyle.height) {
+      setTimeout(this.resize, 0);
     }
   }
   componentWillMount(): void {
@@ -123,7 +127,7 @@ const config = {
   dataSource: {
     type: 'API',
     name: '数据接口api',
-    path: '/mock/line/:path=wada/:id=dwwa',
+    path: '/mock/line/:id=dwwa?title=:title=wada',
     repeat: true,
     repeatTimer: 10,
     // para: Array<DataSourcesPara>,
@@ -273,7 +277,17 @@ const config = {
         }
       }
     }
-  }
-
+  },
+  events: [{
+    name: 'test',
+    desc: '测试事件',
+    type: 'prop',
+    propName: 'onChange',
+    fields: {            
+      value: {                      
+        description: "点击值",
+      }
+    }
+  }]
 };
 export { config };
