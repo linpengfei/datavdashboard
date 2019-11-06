@@ -29,7 +29,21 @@ class ComponentList extends React.Component<Props, State> {
           resource: '',
           name: '折线图',
           icon: 'http://img.alicdn.com/tfs/TB1RSuyJuuSBuNjy1XcXXcYjFXa-270-160.png',
-        }
+        },
+          {
+            id: 'gauge',
+            type: 'regular',
+            resource: '',
+            name: '仪表盘',
+            icon: 'http://img.alicdn.com/tfs/TB1RSuyJuuSBuNjy1XcXXcYjFXa-270-160.png',
+          },
+          {
+            id: 'selectLabel',
+            type: 'regular',
+            resource: '',
+            name: '标签',
+            icon: 'http://img.alicdn.com/tfs/TB1RSuyJuuSBuNjy1XcXXcYjFXa-270-160.png',
+          }
         ],
       
     };

@@ -101,6 +101,7 @@ class Line extends React.PureComponent<Props, State> {
   }
   componentWillReceiveProps(nextProps: Props, nextContext: any): void {
     console.log(nextProps.styleData);
+    this.props.onChange({ value: new Date() });
     if (nextProps.data !== this.props.data || nextProps.styleData.configStyle !== this.props.styleData.configStyle) {
       this.generateOption(nextProps);
       if (this.echartsInstance) {
@@ -127,8 +128,8 @@ const config = {
   dataSource: {
     type: 'API',
     name: '数据接口api',
-    path: '/mock/line/:id=dwwa?title=:title=wada',
-    repeat: true,
+    path: '/mock/line/:id=dwwa?title=:title=wada&label=:label',
+    repeat: false,
     repeatTimer: 10,
     // para: Array<DataSourcesPara>,
     // pre: (attr: Object, config: Object) => {[key: string]: string },
@@ -283,9 +284,10 @@ const config = {
     desc: '测试事件',
     type: 'prop',
     propName: 'onChange',
-    fields: {            
+    fields: {
       value: {                      
         description: "点击值",
+        alias: '',
       }
     }
   }]

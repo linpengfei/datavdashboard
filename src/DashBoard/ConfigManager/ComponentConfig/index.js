@@ -9,6 +9,7 @@ import React, {Component} from 'react';
 // import {connect} from 'react-redux';
 import StyleConfig from './styleConfig';
 import DataConfig from './dataConfig';
+import EventsConfig from './eventsConfig';
 import { Tabs, Input, Row, Col } from 'antd';
 const { TabPane } = Tabs;
 type Props = {
@@ -32,8 +33,8 @@ class index extends Component<Props, State> {
       <TabPane tab="数据" key="data">
         <DataConfig />
       </TabPane>
-      <TabPane tab="事件" key="action">
-        事件
+      <TabPane tab="交互" key="action">
+        <EventsConfig />
       </TabPane>
     </Tabs>;
   }

@@ -24,7 +24,8 @@ const initStore = {
     title: '',
     backgroundColor: '#ffffff',
     backgroundImg: '',
-  }
+  },
+  events: [],
 };
 const SETSTYLEVALUE = 'SETSTYLEVALUE';
 const SETSELECTITEM = 'SETSELECTITEM';

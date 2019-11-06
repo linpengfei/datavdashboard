@@ -25,6 +25,16 @@ ComponentsFactory.prototype.getComponent = function (componentId) {
            this.componentList.set(componentId, app);
            return app;
          });
+      case 'gauge':
+        return import(/* webpackChunkName: "Gauge" */ '../../Components/Gauge').then(app => {
+          this.componentList.set(componentId, app);
+          return app;
+        });
+      case 'selectLabel':
+        return import(/* webpackChunkName: "SelectLabel" */ '../../Components/SelectLabel').then(app => {
+          this.componentList.set(componentId, app);
+          return app;
+        });
         case 'map':
         default:
             return new Promise(function (resolve, reject) {

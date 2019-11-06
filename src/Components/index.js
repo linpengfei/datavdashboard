@@ -5,4 +5,6 @@
  **/
 import Text from './Text';
 import Line from './Line';
-export { Text, Line };
+import Gauge from './Gauge';
+import SelectLabel from './SelectLabel';
+export { Text, Line, Gauge, SelectLabel };

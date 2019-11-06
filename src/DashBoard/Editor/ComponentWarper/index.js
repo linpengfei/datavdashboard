@@ -11,7 +11,9 @@ import { bindActionCreators } from "redux";
 import { setSelectItem } from "../../../globalReducer";
 import axios from 'axios';
 import _get from 'lodash/get';
-import { ResizableBox } from 'react-resizable';
+import { createSelector } from 'reselect'
+import { propsEvent as PropsEventSub } from '../../Subject';
+import {Subscription} from "rxjs";
 const pathReg = /:\w+(\.\w+)*(=\w+)?/g;
 type Props = {
     width: number,
@@ -37,15 +39,41 @@ class ComponentWarp extends React.Component<Props, State> {
     };
     timer: number;
     wrappedInstance: Object;
+    eventSelect: Function;
+    propEventSubscription: Subscription;
+    dataSourceKey: Object;
     constructor(props: Props) {
         super(props);
         this.state = {
           selected: false,
           dataProxy: !!props.dataSource.type,
-          data: props.children.props.data
+          data: props.children.props.data || {}
         };
         this.wrappedInstance = React.createRef();
-        console.log(props.children.props.data);
+        this.dataSourceKey = new Set();
+        this.eventSelect = createSelector(
+          props => props?.itemData?.componentData?.events || [],
+          events => {
+            const eventProps = {};
+            const propEvent = events.filter(item => item.type === 'prop');
+            propEvent.forEach(event => {
+              const { propName, fields } = event;
+              const dataTrans = {};
+              Object.keys(fields).forEach(key => {
+                dataTrans[key] = fields[key].alias || key;
+              });
+              eventProps[propName] =  (data) => {
+                const ret = {};
+                Object.keys(data).forEach(key => {
+                  ret[dataTrans[key]] = data[key];
+                });
+                PropsEventSub.emit({ type: propName, data: ret });
+              }
+            });
+            console.log(eventProps);
+            return eventProps;
+          }
+        )
     }
   selectItem = item => {
       console.log(this.props);
@@ -54,9 +82,9 @@ class ComponentWarp extends React.Component<Props, State> {
       return false;
     }
     const { id, initStyleData, componentData } = item;
-    const { dataAttr = {}, dataSource = {} } = componentData;
+    const { dataAttr = {}, dataSource = {}, events } = componentData;
     const { configStyle, baseStyle } = initStyleData;
-    const selectData = { id, ...JSON.parse(JSON.stringify({ dataAttr, dataSource })), styleConfig: componentData.styleObj.configStyle, styleItem: JSON.parse(JSON.stringify({ configStyle, baseStyle }))};
+    const selectData = { id, ...JSON.parse(JSON.stringify({ dataAttr, dataSource, events })), styleConfig: componentData.styleObj.configStyle, styleItem: JSON.parse(JSON.stringify({ configStyle, baseStyle }))};
     this.props.setSelectItem(selectData);
   };
     componentWillUnmount(): void {
@@ -70,17 +98,21 @@ class ComponentWarp extends React.Component<Props, State> {
     }
   
   componentDidMount() {
+      console.log('mount');
       this.resetDataProxy();
-      console.log(this.wrappedInstance);
-    }
-    resetDataProxy = () => {
-      clearTimeout(this.timer);
-      const { dataSource } = this.props;
-      const { type, repeat, repeatTimer, path, dataFunction, post } = dataSource;
-      const { data } = this.state;
-      switch(type) { 
-        case "API":
-          const cb = () => {
+      this.propEventSubscription = PropsEventSub.on((res) => {
+        console.log(res);
+        const { data: eventData  = {}} = res;
+        const keys = Object.keys(eventData);
+        let fresh = keys.find(key => this.dataSourceKey.has(key));
+        if (!fresh) {
+          return;
+        }
+        const { dataSource } = this.props;
+        const { type, path, dataFunction, post } = dataSource;
+        const { data } = this.state;
+        switch(type) {
+          case "API":
             let postFunction;
             if(post) {
               try {
@@ -92,18 +124,64 @@ class ComponentWarp extends React.Component<Props, State> {
             let pathPara = pathReg.exec(path);
             const para = {};
             while(pathPara) {
-              console.log(pathPara[0]);
               const [temp] = pathPara;
               const [a,b] = temp.substr(1).split('=');
-              const value = _get(data, a, b);
+              this.dataSourceKey.add(a);
+              console.log('a:', a, 'b:', b);
+              const value = _get(eventData, a, _get(data, a, b));
               para[temp] = value;
               pathPara = pathReg.exec(path);
             }
-            console.log(para);
             let actualPath = path;
             for(const key in para) {
               actualPath = actualPath.replace(key, para[key]);
             }
+            axios.get(actualPath).then(res => {
+              // console.log(res);
+              const ret = postFunction ? postFunction(res) : res.data.data;
+              this.setState({ data: ret });
+            });
+            break;
+          default:
+            break;
+      }});
+      console.log(this.wrappedInstance);
+    }
+    resetDataProxy = () => {
+      clearTimeout(this.timer);
+      const { dataSource } = this.props;
+      const { type, repeat, repeatTimer, path, post, staticData } = dataSource;
+      const { data = {} } = this.state;
+      this.dataSourceKey = new Set();
+      console.log('data:', data);
+      switch(type) { 
+        case "API":
+          let postFunction;
+          if(post) {
+            try {
+              postFunction = new Function('response', post.replace(/^function\([^]*\)[\s]*{[\s]*([^]*)[\s]*}$/, '$1'));
+            } catch(e) {
+              console.error(e);
+            }
+          }
+          let pathPara = pathReg.exec(path);
+          const para = {};
+          while(pathPara) {
+            console.log(pathPara[0]);
+            const [temp] = pathPara;
+            const [a,b] = temp.substr(1).split('=');
+            this.dataSourceKey.add(a);
+            console.log('a:', a, 'b:', b);
+            const value = _get(data, a, b);
+            para[temp] = value;
+            pathPara = pathReg.exec(path);
+          }
+          console.log(para);
+          let actualPath = path;
+          for(const key in para) {
+            actualPath = actualPath.replace(key, para[key]);
+          }
+          const cb = () => {
             return axios.get(actualPath).then(res => {
               // console.log(res);
               const ret = postFunction ? postFunction(res) : res.data.data;
@@ -134,6 +212,17 @@ class ComponentWarp extends React.Component<Props, State> {
           };
           cb1();
           break;
+        case 'STATIC':
+          let dataTemp = staticData;
+          if (typeof staticData === 'string') {
+            try {
+              dataTemp = JSON.parse(staticData);
+            }catch(e) {
+              console.warn(e);
+            } 
+          }
+          this.setState({ data: dataTemp });
+          break;
         default:
           break;
       }
@@ -152,7 +241,7 @@ class ComponentWarp extends React.Component<Props, State> {
               {/*</div>*/}
               {/*<ResizableBox width={width} height={height}>*/}
                 <div className="datav-warp">
-                  {React.cloneElement(this.props.children, { data: dataProxy ? data : undefined, ref: this.wrappedInstance })}
+                  {React.cloneElement(this.props.children, { data: dataProxy ? data : undefined, ref: this.wrappedInstance, ...this.eventSelect(this.props) })}
                 </div>
               {/*</ResizableBox>*/}
             </div>);

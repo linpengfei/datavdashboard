@@ -11,6 +11,7 @@ import {connect} from "react-redux";
 import { Row, Col, Input, Switch, InputNumber, Select, Button } from 'antd';
 import AceEditor from 'react-ace';
 import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/theme-xcode";
 const { TextArea } = Input;
 const { Option } = Select;
 // import {bindActionCreators, compose} from 'redux';
@@ -39,7 +40,18 @@ class dataConfig extends PureComponent<Props, State> {
       this.setState({ dataSource: { ...this.props.dataSource } });
     }
   }
-  
+  renderData = type => {
+    switch (type) {
+      case "API":
+        return this.renderApiSource();
+      case "STATIC":
+        return this.renderStaticData();
+      case "FUNCTION":
+        return this.renderFunctionSource();
+      default:
+        return null;
+    }
+  };
   renderApiSource = () => {
     const { dataSource } = this.state;
     const { name, path, repeat, repeatTimer, desc, type, post } = dataSource;
@@ -51,6 +63,7 @@ class dataConfig extends PureComponent<Props, State> {
           <Select value={type} onChange={type => this.setState({ dataSource: { ...dataSource, type } })}>
             <Option value="API">API</Option>
             <Option value="Function">自定义函数</Option>
+            <Option value="STATIC">静态数据</Option>
           </Select>
         </Col>
       </Row>
@@ -118,7 +131,7 @@ class dataConfig extends PureComponent<Props, State> {
   };
   renderFunctionSource = () => {
     const { dataSource } = this.state;
-    const { name, dataFunction, repeat, repeatTimer, desc, type } = dataSource;
+    const { name, post, repeat, repeatTimer, desc, type } = dataSource;
     return <>
       <Row>
         <Col span={4}>类型：</Col>
@@ -126,6 +139,7 @@ class dataConfig extends PureComponent<Props, State> {
           <Select value={type} onChange={type => this.setState({ dataSource: { ...dataSource, type }})}>
             <Option value="API">API</Option>
             <Option value="Function">自定义函数</Option>
+            <Option value="STATIC">静态数据</Option>
           </Select>
         </Col>
       </Row>
@@ -168,7 +182,7 @@ class dataConfig extends PureComponent<Props, State> {
             showPrintMargin={true}
             showGutter={true}
             highlightActiveLine={true}
-            value={dataFunction}
+            value={post}
             setOptions={{
               enableBasicAutocompletion: true,
               enableLiveAutocompletion: true,
@@ -177,6 +191,64 @@ class dataConfig extends PureComponent<Props, State> {
               tabSize: 2,
             }}/>
           {/*<TextArea value={dataFunction} onChange={e => this.setState({ dataSource:{ ...dataSource, dataFunction: e.target.value }})}/>*/}
+        </Col>
+      </Row>
+    </>;
+  };
+  renderStaticData = () => {
+    const { dataSource } = this.state;
+    const { name, desc, type, staticData } = dataSource;
+    return <>
+      <Row>
+        <Col span={4}>类型：</Col>
+        <Col span={20}>
+          <Select value={type} onChange={type => this.setState({ dataSource: { ...dataSource, type } })}>
+            <Option value="API">API</Option>
+            <Option value="Function">自定义函数</Option>
+            <Option value="STATIC">静态数据</Option>
+          </Select>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={4}>name：</Col>
+        <Col span={20}>
+          <Input value={name} onChange={e => this.setState({ dataSource: { ...dataSource, name: e.target.value }})}/>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={4}>desc：</Col>
+        <Col span={20}>
+          <Input value={desc} onChange={e => this.setState({ dataSource: { ...dataSource, desc: e.target.value }})}/>
+        </Col>
+      </Row>
+      {/*todo 后处理函数*/}
+      <Row>
+        <Col span={4}>静态数据：</Col>
+      </Row>
+      <Row>
+        <Col span={24}>
+          <div style={{ minHeight: 150 }}>
+            <AceEditor
+              placeholder="Placeholder Text"
+              mode="javascript"
+              theme="xcode"
+              name="blah2"
+              // onLoad={this.onLoad}
+              onChange={staticData => this.setState({ dataSource:{ ...dataSource, staticData }})}
+              fontSize={14}
+              showPrintMargin={true}
+              showGutter={true}
+              highlightActiveLine={true}
+              value={ typeof  staticData === 'string' ? staticData : JSON.stringify(staticData, null, 2)}
+              setOptions={{
+                enableBasicAutocompletion: true,
+                enableLiveAutocompletion: true,
+                enableSnippets: true,
+                showLineNumbers: true,
+                tabSize: 2,
+              }}/>
+            {/*<TextArea value={post} onChange={e => this.setState({ dataSource:{ ...dataSource, post: e.target.value }})}/>*/}
+          </div>
         </Col>
       </Row>
     </>;
@@ -197,7 +269,7 @@ class dataConfig extends PureComponent<Props, State> {
         <ReactJson src={dataAttr} name={null} collapsed={false} displayDataTypes={false}/>
       </div>
       <div className="data-source-container">
-        { type ? type === 'API' ? this.renderApiSource() : this.renderFunctionSource() : null }
+        { this.renderData(type)}
         <Button onClick={this.onUpdateDataSource}>更新</Button>
       </div>
     </div>;
