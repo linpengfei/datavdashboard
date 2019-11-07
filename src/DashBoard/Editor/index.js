@@ -15,7 +15,7 @@ import ComponentsFactory from '../ComponentsFactory';
 import { generateUuid } from '../../utils';
 import ComponentWarp from './ComponentWarper';
 import {bindActionCreators} from "redux";
-import {updateComponentStyleAction, updateComponentDataSourceAction } from "../../globalReducer";
+import {updateComponentStyleAction, updateComponentDataSourceAction, updateComponentEventsAction } from "../../globalReducer";
 import {connect} from "react-redux";
 type Props = {
     connectDropTarget: Function,
@@ -23,6 +23,7 @@ type Props = {
   id: string,
   updateComponentDataSource: boolean,
   updateComponentStyle: boolean,
+  updateEvents: boolean,
   styleItem: {
     configStyle: Object,
     baseStyle: Object,
@@ -32,7 +33,8 @@ type Props = {
     height: number,
     backgroundColor: string,
     backgroundImg: string,
-  }
+  },
+  events: Array<Object>,
 };
 type State = {
     scale: number,
@@ -81,6 +83,10 @@ class Editor extends Component<Props, State> {
         const { id, dataSource } = this.props;
         id && this.updateSourceData(id, dataSource);
       }
+      if(props.updateEvents !== this.props.updateEvents && this.props.updateEvents) {
+        const { id, events } = this.props;
+        id && this.updateEvents(id, events);
+      }
     }
     insertComponent(type: string, position: { left: number, top: number }) {
         this.componentsFactory.getComponent(type).then((com: {default: Object, config: Object}) => {
@@ -125,6 +131,14 @@ class Editor extends Component<Props, State> {
     componentData.splice(componentData.indexOf(updateData), 1, updateData);
     this.setState({ componentData: [].concat(componentData) });
     this.props.updateComponentDataSourceAction(false);
+  };
+  updateEvents = (id: string, events) => {
+    const { componentData } = this.state;
+    let updateData = componentData.find(item => item.id === id);
+    updateData.componentData.events = JSON.parse(JSON.stringify(events));
+    componentData.splice(componentData.indexOf(updateData), 1, updateData);
+    this.setState({ componentData: [].concat(componentData) });
+    this.props.updateComponentEventsAction(false);
   };
   generatePropsData = (dataAttr, init) =>{
       const { type } = dataAttr;
@@ -204,9 +218,11 @@ const mapStateToProps = state => ({
   dataSource: state.global.dataSource,
   updateComponentDataSource: state.global.updateComponentDataSource,
   projectConfig: state.global.projectConfig,
+  updateEvents: state.global.updateEvents,
+  events: state.global.events,
 });
 const mapDispatchToProps = dispatch => ({
-  ...bindActionCreators({ updateComponentStyleAction, updateComponentDataSourceAction }, dispatch),
+  ...bindActionCreators({ updateComponentStyleAction, updateComponentDataSourceAction, updateComponentEventsAction }, dispatch),
 });
 const withConnect = connect(
   mapStateToProps,

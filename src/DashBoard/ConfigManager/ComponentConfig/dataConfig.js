@@ -109,6 +109,7 @@ class dataConfig extends PureComponent<Props, State> {
               mode="javascript"
               theme="xcode"
               name="blah2"
+              height="150px"
               // onLoad={this.onLoad}
               onChange={post => this.setState({ dataSource:{ ...dataSource, post }})}
               fontSize={14}
@@ -176,6 +177,7 @@ class dataConfig extends PureComponent<Props, State> {
             mode="javascript"
             theme="xcode"
             name="blah2"
+            height="150px"
             // onLoad={this.onLoad}
             onChange={dataFunction => this.setState({ dataSource:{ ...dataSource, dataFunction }})}
             fontSize={14}
@@ -234,6 +236,7 @@ class dataConfig extends PureComponent<Props, State> {
               theme="xcode"
               name="blah2"
               // onLoad={this.onLoad}
+              height="150px"
               onChange={staticData => this.setState({ dataSource:{ ...dataSource, staticData }})}
               fontSize={14}
               showPrintMargin={true}

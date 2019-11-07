@@ -4,9 +4,9 @@
  *
  **/
 import React, {Component} from 'react';
-import { Row, Col, Input, Collapse } from 'antd';
+import { Row, Col, Input, Collapse, Button } from 'antd';
 import {bindActionCreators} from "redux";
-import {setSelectItem, updateComponentDataSourceAction} from "../../../globalReducer";
+import {setSelectItem, updateComponentEventsAction } from "../../../globalReducer";
 import {connect} from "react-redux";
 // import {bindActionCreators, compose} from 'redux';
 // import injectReducer from '@alpha/utils/injectReducer';
@@ -14,9 +14,11 @@ import {connect} from "react-redux";
 const { Panel } = Collapse;
 type Props = {
   events: Array<Object>;
+  setSelectItem: Function,
+  updateComponentEventsAction: Function,
 };
 type State = {
-  eventList: Array<Object>;
+  events: Array<Object>;
 };
 
 class eventsConfig extends Component<Props, State> {
@@ -26,16 +28,19 @@ class eventsConfig extends Component<Props, State> {
   
   constructor(props: Props) {
     super(props);
-    const eventList = JSON.parse(JSON.stringify(props.events));
-    this.state = { eventList };
+    const events = JSON.parse(JSON.stringify(props.events));
+    this.state = { events };
   }
-  
+  onUpdateEvents = () => {
+    const { events } = this.state;
+    this.props.setSelectItem({ events: JSON.parse(JSON.stringify(events ))});
+    this.props.updateComponentEventsAction(true);
+  }
   render() {
-    const { eventList = [] } = this.state;
-    console.log(eventList);
+    const { events = [] } = this.state;
     return <div className="event-config-containers">
       <Collapse>
-        { eventList.map((event, i) => <Panel header={event.desc || event.name} key={i}>
+        { events.map((event, i) => <Panel header={event.desc || event.name} key={i}>
           <Row>
             <Col span={6}>
               字段
@@ -52,7 +57,12 @@ class eventsConfig extends Component<Props, State> {
               {key}
             </Col>
             <Col span={9}>
-              <Input value={event.fields[key].alias} placeholder="可自定义"/>
+              <Input value={event.fields[key].alias} placeholder="可自定义" onChange={e => {
+                const alias = e.target.value;
+                const { events } = this.props;
+                events[i].fields[key].alias = alias;
+                this.setState({ events });
+              }}/>
             </Col>
             <Col span={9}>
               {event.fields[key].description}
@@ -60,6 +70,7 @@ class eventsConfig extends Component<Props, State> {
           </Row>)}
         </Panel>)}
       </Collapse>
+      <Button onClick={this.onUpdateEvents}>应用</Button>
     </div>;
   }
 }
@@ -68,7 +79,7 @@ const mapStateToProps = state => ({
   events: state.global.events
 });
 const mapDispatchToProps = dispatch => ({
-  ...bindActionCreators({ setSelectItem, updateComponentDataSourceAction }, dispatch),
+  ...bindActionCreators({ setSelectItem, updateComponentEventsAction }, dispatch),
 });
 const withConnect = connect(
   mapStateToProps,

@@ -37,12 +37,13 @@ class SelectLabel extends React.PureComponent<Props, State> {
     this.props.onSelect({ label: e.target.value });
   };
   render() {
-    const { data } = this.props;
+    const { data, styleData = {} } = this.props;
     const { labels = [] } = data;
+    const { configStyle = { }} = styleData;
     const { value } = this.state;
-    return <div style={{ width: '100%', height: '100%', background: '#fff' }} ref={this.canvasContainerRef} >
-      <Radio.Group value={value} onChange={this.onChange}>
-        {labels.map(label => <Radio.Button value={label.value}>{label.label}</Radio.Button>)}
+    return <div style={{ width: '100%', height: '100%', background: '#fff' }} >
+      <Radio.Group value={value} onChange={this.onChange} size={configStyle.size} buttonStyle={configStyle.buttonStyle}>
+        {labels.map(label => <Radio.Button key={label.value} value={label.value}>{label.label}</Radio.Button>)}
       </Radio.Group>
     </div>;
   }
@@ -112,7 +113,7 @@ const config = {
         },
           {
             label: '大',
-            value: 'big'
+            value: 'large'
           }
         ]
       },
