@@ -98,10 +98,8 @@ const config = {
     type: 'FUNCTION',
     name: '随机生成值',
     repeat: true,
-    repeatTimer: 10,
-    // para: Array<DataSourcesPara>,
-    // pre: (attr: Object, config: Object) => {[key: string]: string },
-    post: "function(a) {\n" +
+    repeatTime: 10,
+    post: "function() {\n" +
       "   var data = { \"value\": 0 };\n" +
       "   data.value = (Math.random() * 100).toFixed(2) - 0;\n" +
       "   return data;\n" +

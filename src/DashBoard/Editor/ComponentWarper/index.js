@@ -150,7 +150,7 @@ class ComponentWarp extends React.Component<Props, State> {
     resetDataProxy = () => {
       clearTimeout(this.timer);
       const { dataSource } = this.props;
-      const { type, repeat, repeatTimer, path, post, staticData } = dataSource;
+      const { type, repeat, repeatTime, path, post, staticData } = dataSource;
       const { data = {} } = this.state;
       this.dataSourceKey = new Set();
       console.log('data:', data);
@@ -187,7 +187,7 @@ class ComponentWarp extends React.Component<Props, State> {
               const ret = postFunction ? postFunction(res) : res.data.data;
               this.setState({ data: ret });
               if(repeat) {
-                this.timer = setTimeout(cb, repeatTimer * 1000);
+                this.timer = setTimeout(cb, repeatTime * 1000);
               }
             })
           };
@@ -206,7 +206,7 @@ class ComponentWarp extends React.Component<Props, State> {
               console.log(ret);
               this.setState({ data: ret });
               if(repeat) {
-                this.timer = setTimeout(cb1, repeatTimer * 1000)
+                this.timer = setTimeout(cb1, repeatTime * 1000)
               }
             })
           };

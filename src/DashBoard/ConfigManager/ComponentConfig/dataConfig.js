@@ -54,7 +54,7 @@ class dataConfig extends PureComponent<Props, State> {
   };
   renderApiSource = () => {
     const { dataSource } = this.state;
-    const { name, path, repeat, repeatTimer, desc, type, post } = dataSource;
+    const { name, path, repeat, repeatTime, desc, type, post } = dataSource;
     console.log('dataSource:', dataSource, this.props);
     return <>
       <Row>
@@ -94,7 +94,7 @@ class dataConfig extends PureComponent<Props, State> {
       <Row>
         <Col span={4}>间隔：</Col>
         <Col span={20}>
-          <InputNumber value={repeatTimer} onChange={repeatTimer => this.setState({ dataSource: { ...dataSource, repeatTimer }})} />
+          <InputNumber value={repeatTime} onChange={repeatTime => this.setState({ dataSource: { ...dataSource, repeatTime }})} />
         </Col>
       </Row>
       {/*todo 后处理函数*/}
@@ -132,7 +132,7 @@ class dataConfig extends PureComponent<Props, State> {
   };
   renderFunctionSource = () => {
     const { dataSource } = this.state;
-    const { name, post, repeat, repeatTimer, desc, type } = dataSource;
+    const { name, post, repeat, repeatTime, desc, type } = dataSource;
     return <>
       <Row>
         <Col span={4}>类型：</Col>
@@ -165,7 +165,7 @@ class dataConfig extends PureComponent<Props, State> {
       <Row>
         <Col span={4}>间隔：</Col>
         <Col span={20}>
-          <InputNumber value={repeatTimer} onChange={repeatTimer => this.setState({ dataSource: { ...dataSource, repeatTimer }})} />
+          <InputNumber value={repeatTime} onChange={repeatTime => this.setState({ dataSource: { ...dataSource, repeatTime }})} />
         </Col>
       </Row>
       {/*todo 后处理函数*/}

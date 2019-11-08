@@ -130,9 +130,7 @@ const config = {
     name: '数据接口api',
     path: '/mock/line/:id=dwwa?title=:title=wada&label=:label',
     repeat: false,
-    repeatTimer: 10,
-    // para: Array<DataSourcesPara>,
-    // pre: (attr: Object, config: Object) => {[key: string]: string },
+    repeatTime: 10,
     post: "function(response) { \n"+
       "  console.log('response:', response);\n" +
       "  return response.data.data;\n}",
@@ -184,10 +182,10 @@ const config = {
             type: 'string',
             title: '名称',
           },
-          // "type": {
-          //   type: 'string',
-          //   title: '类型',
-          // },
+          type: {
+            type: 'string',
+            title: '类型',
+          },
           stack: {
             type: 'string',
             title: '叠加组',
@@ -208,8 +206,7 @@ const config = {
         },
         default: ['周一','周二','周三','周四','周五','周六','周日'],
       }
-    },
-    required: ['data'],
+    }
   },
   styleObj: {
     baseStyle: {
