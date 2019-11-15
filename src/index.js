@@ -5,6 +5,7 @@ import App from './App';
 import { Provider } from 'react-redux';
 import configureStore from "./createStore";
 import * as serviceWorker from './serviceWorker';
+import './Components/index';
 const initialState = {};
 const store = configureStore(initialState);
 // import('./App').then(App => {

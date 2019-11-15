@@ -14,7 +14,9 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect'
 import { propsEvent as PropsEventSub } from '../../Subject';
 import {Subscription} from "rxjs";
-const pathReg = /:\w+(\.\w+)*(=\w+)?/g;
+import Draggable from 'react-draggable';
+import MqttClient from "../../../utils/mqtt";
+const pathReg = /:[a-zA-Z]+(\.[a-zA-Z]+)*(=\w+)?/g;
 type Props = {
     width: number,
     height: number,
@@ -42,6 +44,7 @@ class ComponentWarp extends React.Component<Props, State> {
     eventSelect: Function;
     propEventSubscription: Subscription;
     dataSourceKey: Object;
+    mqttClient: Object;
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -150,8 +153,9 @@ class ComponentWarp extends React.Component<Props, State> {
     resetDataProxy = () => {
       clearTimeout(this.timer);
       const { dataSource } = this.props;
-      const { type, repeat, repeatTime, path, post, staticData } = dataSource;
+      const { type, repeat, repeatTime, path, post, staticData, username, password, topic } = dataSource;
       const { data = {} } = this.state;
+      this.dataSourceKey && this.dataSourceKey.clear();
       this.dataSourceKey = new Set();
       console.log('data:', data);
       switch(type) { 
@@ -164,23 +168,25 @@ class ComponentWarp extends React.Component<Props, State> {
               console.error(e);
             }
           }
-          let pathPara = pathReg.exec(path);
-          const para = {};
-          while(pathPara) {
-            console.log(pathPara[0]);
-            const [temp] = pathPara;
-            const [a,b] = temp.substr(1).split('=');
-            this.dataSourceKey.add(a);
-            console.log('a:', a, 'b:', b);
-            const value = _get(data, a, b);
-            para[temp] = value;
-            pathPara = pathReg.exec(path);
-          }
-          console.log(para);
-          let actualPath = path;
-          for(const key in para) {
-            actualPath = actualPath.replace(key, para[key]);
-          }
+          //
+          // let pathPara = pathReg.exec(path);
+          // const para = {};
+          // while(pathPara) {
+          //   console.log(pathPara[0]);
+          //   const [temp] = pathPara;
+          //   const [a,b] = temp.substr(1).split('=');
+          //   this.dataSourceKey.add(a);
+          //   console.log('a:', a, 'b:', b);
+          //   const value = _get(data, a, b);
+          //   para[temp] = value;
+          //   pathPara = pathReg.exec(path);
+          // }
+          // console.log(para);
+          // let actualPath = path;
+          // for(const key in para) {
+          //   actualPath = actualPath.replace(key, para[key]);
+          // }
+          const actualPath = this.generatePath(path, data);
           const cb = () => {
             return axios.get(actualPath).then(res => {
               // console.log(res);
@@ -223,29 +229,81 @@ class ComponentWarp extends React.Component<Props, State> {
           }
           this.setState({ data: dataTemp });
           break;
+        case "MQTT":
+          this.mqttClient && this.mqttClient.destroy();
+          const options = { username, password };
+          let cbRet;
+          try {
+            cbRet = new Function('response', post.replace(/^function\([^]*\)[\s]*{[\s]*([^]*)[\s]*}$/, '$1'));
+          } catch(e) {
+            console.error(e);
+          }
+          this.mqttClient = new MqttClient(options, path, topic, cbRet);
+          this.mqttClient.connect();
+          break;
         default:
           break;
       }
     };
-    render() {
-        const { width, height, left, top, connectDragSource, itemData } = this.props;
-        // console.log(this.props);
-        const { dataProxy, data } = this.state;
-        console.log("dataProxy:",dataProxy);
-        return connectDragSource(
-            <div className="datav-transform-wrapper" onClick={ () => this.selectItem(itemData) } style={{ width, height, transform: `translate(${left}px, ${top}px)`}}>
-              {/*<div className="navigator-line">*/}
-              {/*    <div className="navigator-line-left" />*/}
-              {/*    <div className="navigator-line-top" />*/}
-              {/*    <div className="navigator-line-count">{left},{top}</div>*/}
-              {/*</div>*/}
-              {/*<ResizableBox width={width} height={height}>*/}
-                <div className="datav-warp">
-                  {React.cloneElement(this.props.children, { data: dataProxy ? data : undefined, ref: this.wrappedInstance, ...this.eventSelect(this.props) })}
-                </div>
-              {/*</ResizableBox>*/}
-            </div>);
-    }
+    // render() {
+    //     const { width, height, left, top, connectDragSource, itemData } = this.props;
+    //     // console.log(this.props);
+    //     const { dataProxy, data } = this.state;
+    //     console.log("dataProxy:",dataProxy);
+    //     return connectDragSource(
+    //         <div className="datav-transform-wrapper" onClick={ () => this.selectItem(itemData) } style={{ width, height, transform: `translate(${left}px, ${top}px)`}}>
+    //           {/*<div className="navigator-line">*/}
+    //           {/*    <div className="navigator-line-left" />*/}
+    //           {/*    <div className="navigator-line-top" />*/}
+    //           {/*    <div className="navigator-line-count">{left},{top}</div>*/}
+    //           {/*</div>*/}
+    //           {/*<ResizableBox width={width} height={height}>*/}
+    //             <div className="datav-warp">
+    //               {React.cloneElement(this.props.children, { data: dataProxy ? data : undefined, ref: this.wrappedInstance, ...this.eventSelect(this.props) })}
+    //             </div>
+    //           {/*</ResizableBox>*/}
+    //         </div>);
+    // }
+  generatePath = (path, data) => {
+  let pathPara = pathReg.exec(path);
+  const para = {};
+  while(pathPara) {
+    console.log(pathPara[0]);
+    const [temp] = pathPara;
+    const [a,b] = temp.substr(1).split('=');
+    this.dataSourceKey.add(a);
+    console.log('a:', a, 'b:', b);
+    const value = _get(data, a, b);
+    para[temp] = value;
+    pathPara = pathReg.exec(path);
+  }
+  console.log(para);
+  let actualPath = path;
+  for(const key in para) {
+  actualPath = actualPath.replace(key, para[key]);
+}
+  return actualPath;
+};
+  render() {
+    const { width, height, left, top, connectDragSource, itemData, scale } = this.props;
+    // console.log(this.props);
+    const { dataProxy, data } = this.state;
+    console.log("dataProxy:",dataProxy);
+    return <Draggable scale={scale}>
+      <div className="datav-transform-wrapper" onClick={ () => this.selectItem(itemData) } style={{ width, height, left, top }}>
+        {/*<div className="navigator-line">*/}
+        {/*    <div className="navigator-line-left" />*/}
+        {/*    <div className="navigator-line-top" />*/}
+        {/*    <div className="navigator-line-count">{left},{top}</div>*/}
+        {/*</div>*/}
+        {/*<ResizableBox width={width} height={height}>*/}
+        <div className="datav-warp">
+          {React.cloneElement(this.props.children, { data: dataProxy ? data : undefined, ref: this.wrappedInstance, ...this.eventSelect(this.props) })}
+        </div>
+        {/*</ResizableBox>*/}
+      </div>
+    </Draggable>;
+  }
 }
 const mapStateToProps = state => ({
   configData: { ...state.global }
@@ -257,13 +315,14 @@ const withConnect = connect(
   mapStateToProps,
   mapDispatchToProps
 );
-export default withConnect(DragSource('move', {
-  beginDrag: function(props, monitor, component) {
-    console.log('beginDrag:', props)
-    return { id: props.id }
-  },
-}, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging(),
-}))(ComponentWarp));
+export default withConnect(ComponentWarp);
+// export default withConnect(DragSource('move', {
+//   beginDrag: function(props, monitor, component) {
+//     console.log('beginDrag:', props)
+//     return { id: props.id }
+//   },
+// }, (connect, monitor) => ({
+//   connectDragSource: connect.dragSource(),
+//   isDragging: monitor.isDragging(),
+// }))(ComponentWarp));
 // export default ComponentWarp;

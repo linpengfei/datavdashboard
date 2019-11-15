@@ -22,7 +22,7 @@ function ComponentItem(props: Props) {
 const spec = {
     beginDrag: function(props, monitor, component) {
         console.log(component);
-        return { id: props.info.id };
+        return { id: props.info.id, info: props.info };
     },
     endDrag: function(props, monitor, component) {
         console.log('position:', monitor.getClientOffset());

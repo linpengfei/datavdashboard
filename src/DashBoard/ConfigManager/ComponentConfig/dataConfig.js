@@ -256,6 +256,62 @@ class dataConfig extends PureComponent<Props, State> {
       </Row>
     </>;
   };
+  renderMqttSource = () => {
+    const { dataSource } = this.state;
+    const { name, desc, type, path, username, password, topic, cb } = dataSource;
+    return <>
+      <Row>
+        <Col span={4}>类型：</Col>
+        <Col span={20}>
+          <Select value={type} onChange={type => this.setState({ dataSource: { ...dataSource, type }})}>
+            <Option value="API">API</Option>
+            <Option value="Function">自定义函数</Option>
+            <Option value="STATIC">静态数据</Option>
+            <Option value="MQTT">MQTT</Option>
+          </Select>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={4}>name：</Col>
+        <Col span={20}>
+          <Input value={name} onChange={e => this.setState({ dataSource: { ...dataSource, name: e.target.value }})}/>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={4}>desc：</Col>
+        <Col span={20}>
+          <Input value={desc} onChange={e => this.setState({ dataSource: { ...dataSource,desc: e.target.value }})}/>
+        </Col>
+      </Row>
+      {/*todo 后处理函数*/}
+      <Row>
+        <Col span={4}>数据处理：</Col>
+        <Col span={20}>
+          <AceEditor
+            placeholder="Placeholder Text"
+            mode="javascript"
+            theme="xcode"
+            name="blah2"
+            height="150px"
+            // onLoad={this.onLoad}
+            onChange={dataFunction => this.setState({ dataSource:{ ...dataSource, dataFunction }})}
+            fontSize={14}
+            showPrintMargin={true}
+            showGutter={true}
+            highlightActiveLine={true}
+            value={cb}
+            setOptions={{
+              enableBasicAutocompletion: true,
+              enableLiveAutocompletion: true,
+              enableSnippets: true,
+              showLineNumbers: true,
+              tabSize: 2,
+            }}/>
+          {/*<TextArea value={dataFunction} onChange={e => this.setState({ dataSource:{ ...dataSource, dataFunction: e.target.value }})}/>*/}
+        </Col>
+      </Row>
+    </>;
+  };
   // generateData
   onUpdateDataSource = () => {
     const { dataSource } = this.state;

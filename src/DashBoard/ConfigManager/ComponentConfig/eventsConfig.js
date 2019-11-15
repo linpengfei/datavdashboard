@@ -31,6 +31,11 @@ class eventsConfig extends Component<Props, State> {
     const events = JSON.parse(JSON.stringify(props.events));
     this.state = { events };
   }
+  componentDidUpdate(prevProps) {
+    if(prevProps.events !== this.props.events) {
+      this.setState({ events: JSON.parse(JSON.stringify(this.props.events))})
+    }
+  }
   onUpdateEvents = () => {
     const { events } = this.state;
     this.props.setSelectItem({ events: JSON.parse(JSON.stringify(events ))});

@@ -6,33 +6,37 @@
 function ComponentsFactory() {
     this.componentList = new Map<string, Object>();
 }
-ComponentsFactory.prototype.getComponent = function (componentId) {
-    const comp = this.componentList.get(componentId);
+ComponentsFactory.prototype.getComponent = function (info) {
+    const { id, resource } = info;
+    const comp = this.componentList.get(id);
     if (comp) {
         return new Promise(function (resolve) {
             resolve(comp);
         });
     }
-    switch(componentId) {
+    return resource().then(component => {
+      this.componentList.set(id, component);
+      return component;
+    });
+    switch(id) {
         case 'text':
             return import('../../Components/Text').then(app => {
-                this.componentList.set(componentId, app);
-                return app;
+
             });
        case 'regular':
        case 'line':  
          return import(/* webpackChunkName: "line" */ '../../Components/Line').then(app => {
-           this.componentList.set(componentId, app);
+           this.componentList.set(id, app);
            return app;
          });
       case 'gauge':
         return import(/* webpackChunkName: "Gauge" */ '../../Components/Gauge').then(app => {
-          this.componentList.set(componentId, app);
+          this.componentList.set(id, app);
           return app;
         });
       case 'selectLabel':
         return import(/* webpackChunkName: "SelectLabel" */ '../../Components/SelectLabel').then(app => {
-          this.componentList.set(componentId, app);
+          this.componentList.set(id, app);
           return app;
         });
         case 'map':

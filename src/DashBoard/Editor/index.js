@@ -88,8 +88,8 @@ class Editor extends Component<Props, State> {
         id && this.updateEvents(id, events);
       }
     }
-    insertComponent(type: string, position: { left: number, top: number }) {
-        this.componentsFactory.getComponent(type).then((com: {default: Object, config: Object}) => {
+    insertComponent(info: Object, position: { left: number, top: number }) {
+        this.componentsFactory.getComponent(info).then((com: {default: Object, config: Object}) => {
             console.log(com, position);
             const initPropsData = this.generatePropsData(com.config.dataAttr);
             const styleObj = JSON.parse(JSON.stringify(com.config.styleObj));
@@ -102,7 +102,7 @@ class Editor extends Component<Props, State> {
             });
             initStyleData.baseStyle = styleObj.baseStyle;
             console.log(initStyleData);
-            const data = { id: generateUuid(type), type, component: com.default, componentData: { ...JSON.parse(JSON.stringify(com.config)), styleObj }, initPropsData, initStyleData };
+            const data = { id: generateUuid(info.id), type: info.id, component: com.default, componentData: { ...JSON.parse(JSON.stringify(com.config)), styleObj }, initPropsData, initStyleData };
             this.setState({ componentData: [...this.state.componentData, data ]});
         });
     }
@@ -203,7 +203,7 @@ class Editor extends Component<Props, State> {
                 {componentData.map(item => {
                     const { id, component: Warp, componentData, initPropsData, initStyleData } = item;
                     const { width, height, left, top } = componentData.styleObj.baseStyle;
-                    return <ComponentWarp itemData={item} key={id} id={id} left={~~left} top={~~top} width={~~width} height={~~height} dataSource={componentData.dataSource}>
+                    return <ComponentWarp scale={scale} itemData={item} key={id} id={id} left={~~left} top={~~top} width={~~width} height={~~height} dataSource={componentData.dataSource}>
                         <Warp title={123} data={initPropsData} styleData={initStyleData}/>
                     </ComponentWarp>;
                 })}
@@ -256,7 +256,7 @@ export default withConnect(DropTarget(['create', 'operate', 'move'], {
         console.log('drop:', monitor.getItemType());
         switch(type) {
           case 'create':
-            component.insertComponent(monitor.getItem().id, { left: ~~((x - left -60) /scale), top: ~~((y - top -60) /scale)});
+            component.insertComponent(monitor.getItem().info, { left: ~~((x - left -60) /scale), top: ~~((y - top -60) /scale)});
             break;
           case 'move':
             component.updateComponent(monitor.getItem().id, { left: ~~((x - left -60) /scale), top: ~~((y - top -60) /scale)});
