@@ -89,11 +89,13 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "flow": "flow",
-    "flow-typed": "flow-typed install"
+    "flow-typed": "flow-typed install",
+    "fix": "eslint --fix src"
   },
   "devDependencies": {
     "flow-bin": "^0.103.0",
-    "flow-typed": "^2.6.0"
+    "flow-typed": "^2.6.0",
+    "worker-loader": "^2.0.0"
   },
   "eslintConfig": {
     "extends": "react-app"

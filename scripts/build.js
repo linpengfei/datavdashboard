@@ -173,7 +173,7 @@ function build(previousFileSizes) {
         );
         return reject(new Error(messages.warnings.join('\n\n')));
       }
-
+      console.log(stats);
       return resolve({
         stats,
         previousFileSizes,

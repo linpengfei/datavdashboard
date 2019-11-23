@@ -174,6 +174,7 @@ module.exports = function(webpackEnv) {
               .replace(/\\/g, '/')
         : isEnvDevelopment &&
           (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
+      globalObject: isEnvDevelopment ? 'this' : undefined
     },
     optimization: {
       minimize: false,
@@ -314,6 +315,10 @@ module.exports = function(webpackEnv) {
             },
           ],
           include: paths.appSrc,
+        },
+        {
+          test: /\.worker\.js$/,
+          loader: require.resolve('worker-loader')
         },
         {
           // "oneOf" will traverse all following loaders until one will
